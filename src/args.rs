@@ -1,5 +1,5 @@
 use crate::errors::*;
-use clap::{CommandFactory, Parser};
+use clap::{ArgAction, CommandFactory, Parser};
 use clap_complete::Shell;
 use std::io::stdout;
 use std::path::PathBuf;
@@ -7,6 +7,9 @@ use std::path::PathBuf;
 /// Flash an AVR firmware from an elf file with micronucleus
 #[derive(Debug, Clone, Parser)]
 pub struct Args {
+    /// Increase logging output (can be used multiple times)
+    #[arg(short, long, global = true, action(ArgAction::Count))]
+    pub verbose: u8,
     /// The elf file containing the firmware
     pub input: Option<PathBuf>,
     /// Instead of flashing, write the firmware to file

@@ -16,9 +16,13 @@ use std::process::Stdio;
 fn main() -> Result<()> {
     let args = Args::parse();
 
-    let log_level = "info";
+    let log_level = match args.verbose {
+        0 => "info",
+        1 => "debug",
+        _ => "trace",
+    };
     env_logger::init_from_env(Env::default().default_filter_or(log_level));
-    debug!("Started with arguments: {args:?}");
+    trace!("Started with arguments: {args:?}");
 
     match (&args.input, args.completions) {
         (Some(input), None) => {
