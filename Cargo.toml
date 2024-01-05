@@ -1,6 +1,11 @@
 [package]
 name = "elf2nucleus"
 version = "0.1.0"
+description = "Flash an AVR firmware from an elf file with micronucleus"
+authors = ["kpcyrd <git@rxv.cc>"]
+license = "GPL-3.0-or-later"
+repository = "https://github.com/kpcyrd/elf2nucleus"
+categories = ["command-line-utilities"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
