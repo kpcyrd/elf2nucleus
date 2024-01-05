@@ -9,6 +9,6 @@ edition = "2021"
 anyhow = "1.0.79"
 clap = { version = "4.4.12", features = ["derive"] }
 clap_complete = "4.4.6"
+elf_rs = "0.3.1"
 env_logger = "0.10.1"
-ihex = "3.0.0"
 log = "0.4.20"

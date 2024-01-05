@@ -5,9 +5,9 @@ use crate::args::Args;
 use crate::errors::*;
 use anyhow::Context;
 use clap::Parser;
+use elf_rs::ElfFile;
 use env_logger::Env;
 use std::borrow::Cow;
-use std::ffi::OsStr;
 use std::fs;
 use std::io::Write;
 use std::path::Path;
@@ -15,26 +15,15 @@ use std::process::Command;
 use std::process::Stdio;
 
 fn parse_from_elf<P: AsRef<Path>>(path: P) -> Result<Vec<u8>> {
-    let output = Command::new("avr-objcopy")
-        .args([
-            OsStr::new("--output-target=ihex"),
-            path.as_ref().as_ref(),
-            OsStr::new("/dev/stdout"),
-        ])
-        .output()
-        .context("Failed to execute avr-objcopy")?;
-
-    if !output.status.success() {
-        anyhow::bail!("avr-objcopy exited with error: {:?}", output.status);
-    }
+    let path = path.as_ref();
+    let buf = fs::read(path).with_context(|| anyhow!("Failed to read from file: {path:?}"))?;
+    let elf = elf_rs::Elf::from_bytes(&buf)
+        .map_err(|err| anyhow!("Failed to parse elf file: {err:?}"))?;
 
     let mut buf = Vec::new();
-    let ihex = String::from_utf8(output.stdout)?;
-    let reader = ihex::Reader::new(&ihex);
-
-    for item in reader {
-        if let Ok(ihex::Record::Data { offset: _, value }) = item {
-            buf.extend(value);
+    for entry in elf.program_header_iter() {
+        if let Some(content) = entry.content() {
+            buf.extend(content);
         }
     }
 
